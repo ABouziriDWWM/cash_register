@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caisse Enregistreuse</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="cash-register">
+        <!-- En-tête -->
+        <header class="header">
+            <h1>Caisse Enregistreuse</h1>
+            <div class="date-time" id="dateTime"></div>
+        </header>
+
+        <!-- Zone principale -->
+        <main class="main-content">
+            <!-- Panneau gauche - Liste des produits et ticket -->
+            <div class="left-panel">
+                <!-- Zone de produits prédéfinis -->
+                <section class="products-section">
+                    <h3>Produits</h3>
+                    <div class="products-grid" id="productsGrid">
+                        <button class="product-btn" data-name="Pain" data-price="1.50">Pain<br>1,50€</button>
+                        <button class="product-btn" data-name="Lait" data-price="1.20">Lait<br>1,20€</button>
+                        <button class="product-btn" data-name="Café" data-price="3.50">Café<br>3,50€</button>
+                        <button class="product-btn" data-name="Sandwich" data-price="4.80">Sandwich<br>4,80€</button>
+                        <button class="product-btn" data-name="Eau" data-price="0.80">Eau<br>0,80€</button>
+                        <button class="product-btn" data-name="Croissant" data-price="1.30">Croissant<br>1,30€</button>
+                    </div>
+                </section>
+
+                <!-- Zone du ticket -->
+                <section class="receipt-section">
+                    <h3>Ticket de caisse</h3>
+                    <div class="receipt" id="receipt">
+                        <div class="receipt-header">
+                            <div class="store-info">
+                                <strong>MAGASIN AMINE</strong><br>
+                                18 rue jean macé<br>
+                                38000 Grenoble<br>
+                                Tel: 01.23.45.67.89
+                            </div>
+                            <hr>
+                        </div>
+                        <div class="receipt-items" id="receiptItems">
+                            <!-- Les articles apparaîtront ici -->
+                        </div>
+                        <div class="receipt-footer" id="receiptFooter">
+                            <!-- Le total apparaîtra ici -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Panneau droit - Affichage et contrôles -->
+            <div class="right-panel">
+                <!-- Affichage principal -->
+                <section class="display-section">
+                    <div class="main-display">
+                        <div class="display-line">
+                            <span class="label">Sous-total:</span>
+                            <span class="amount" id="subtotal">0,00€</span>
+                        </div>
+                        <div class="display-line">
+                            <span class="label">TVA (20%):</span>
+                            <span class="amount" id="tax">0,00€</span>
+                        </div>
+                        <div class="display-line">
+                            <span class="label">Remise:</span>
+                            <span class="amount" id="discount">0,00€</span>
+                        </div>
+                        <div class="display-line total-line">
+                            <span class="label">TOTAL:</span>
+                            <span class="amount total" id="total">0,00€</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Saisie manuelle -->
+                <section class="manual-entry">
+                    <h3>Saisie manuelle</h3>
+                    <div class="entry-form">
+                        <input type="text" id="itemName" placeholder="Nom de l'article" class="input-field">
+                        <input type="number" id="itemPrice" placeholder="Prix" step="0.01" class="input-field">
+                        <input type="number" id="itemQuantity" placeholder="Quantité" value="1" min="1"
+                            class="input-field">
+                        <button id="addManualItem" class="btn btn-primary">Ajouter</button>
+                    </div>
+                </section>
+
+                <!-- Clavier numérique -->
+                <section class="numpad-section">
+                    <h3>Clavier numérique</h3>
+                    <div class="numpad">
+                        <button class="numpad-btn" data-value="7">7</button>
+                        <button class="numpad-btn" data-value="8">8</button>
+                        <button class="numpad-btn" data-value="9">9</button>
+                        <button class="numpad-btn clear-btn" data-action="clear">C</button>
+
+                        <button class="numpad-btn" data-value="4">4</button>
+                        <button class="numpad-btn" data-value="5">5</button>
+                        <button class="numpad-btn" data-value="6">6</button>
+                        <button class="numpad-btn" data-action="backspace">⌫</button>
+
+                        <button class="numpad-btn" data-value="1">1</button>
+                        <button class="numpad-btn" data-value="2">2</button>
+                        <button class="numpad-btn" data-value="3">3</button>
+                        <button class="numpad-btn" data-action="quantity">Qté</button>
+
+                        <button class="numpad-btn zero-btn" data-value="0">0</button>
+                        <button class="numpad-btn" data-value=".">.</button>
+                        <button class="numpad-btn enter-btn" data-action="enter">⏎</button>
+                    </div>
+                </section>
+
+                <!-- Contrôles de remise -->
+                <section class="discount-section">
+                    <h3>Remises</h3>
+                    <div class="discount-controls">
+                        <input type="number" id="discountAmount" placeholder="Montant ou %" step="0.01"
+                            class="input-field">
+                        <button id="applyPercentDiscount" class="btn btn-secondary">% Remise</button>
+                        <button id="applyFixedDiscount" class="btn btn-secondary">€ Remise</button>
+                        <button id="clearDiscount" class="btn btn-warning">Annuler remise</button>
+                    </div>
+                </section>
+
+                <!-- Modes de paiement -->
+                <section class="payment-section">
+                    <h3>Paiement</h3>
+                    <div class="payment-controls">
+                        <button id="payCash" class="btn btn-success payment-btn">💵 Espèces</button>
+                        <button id="payCard" class="btn btn-success payment-btn">💳 Carte</button>
+                        <button id="payCheck" class="btn btn-success payment-btn">📝 Chèque</button>
+                    </div>
+                    <div class="cash-payment" id="cashPayment" style="display: none;">
+                        <input type="number" id="cashReceived" placeholder="Montant reçu" step="0.01"
+                            class="input-field">
+                        <div class="change-display">
+                            <span>Rendu: </span>
+                            <span id="changeAmount">0,00€</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Actions principales -->
+                <section class="actions-section">
+                    <div class="action-buttons">
+                        <button id="printReceipt" class="btn btn-primary">🖨️ Imprimer</button>
+                        <button id="newSale" class="btn btn-info">🆕 Nouvelle vente</button>
+                        <button id="removeLastItem" class="btn btn-warning">❌ Supprimer dernier</button>
+                        <button id="clearAll" class="btn btn-danger">🗑️ Tout effacer</button>
+                    </div>
+                </section>
+
+                <!-- Historique -->
+                <section class="history-section">
+                    <h3>Historique des ventes</h3>
+                    <div class="history-controls">
+                        <button id="showHistory" class="btn btn-info">📊 Voir historique</button>
+                        <button id="clearHistory" class="btn btn-warning">🗑️ Effacer historique</button>
+                    </div>
+                    <div class="history-summary">
+                        <div>Ventes du jour: <span id="dailySales">0</span></div>
+                        <div>Total du jour: <span id="dailyTotal">0,00€</span></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Modal pour l'historique -->
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Historique des ventes</h2>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmation de paiement -->
+        <div id="paymentModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Paiement effectué</h2>
+                <div id="paymentDetails"></div>
+                <button id="confirmPayment" class="btn btn-success">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
