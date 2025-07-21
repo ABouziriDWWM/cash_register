@@ -4,7 +4,7 @@
 
 Une caisse enregistreuse complète développée en HTML, CSS et JavaScript pur. Cette application web offre toutes les fonctionnalités nécessaires pour gérer les ventes dans un commerce.
 
-## Fonctionnalités
+LE SITE WEB: https://cashregisteramine.netlify.app/
 
 ### ✅ Fonctionnalités principales
 
