@@ -10,15 +10,20 @@ class CashRegister {
         this.currentInput = '';
         this.inputMode = 'price'; // 'price' ou 'quantity'
         this.selectedItemIndex = -1;
+        this.selectedProductBtn = null; // Pour la suppression de produits
         
         // Historique des ventes
         this.salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+        
+        // Produits sauvegardés
+        this.savedProducts = JSON.parse(localStorage.getItem('savedProducts')) || [];
         
         this.init();
     }
     
     init() {
         this.setupEventListeners();
+        this.loadSavedProducts();
         this.updateDateTime();
         this.updateDisplay();
         this.updateHistorySummary();
@@ -28,14 +33,17 @@ class CashRegister {
     }
     
     setupEventListeners() {
-        // Produits prédéfinis
-        document.querySelectorAll('.product-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const name = btn.dataset.name;
-                const price = parseFloat(btn.dataset.price);
-                this.addItem(name, price, 1);
-            });
+        // Gestion des produits
+        document.getElementById('addProductBtn').addEventListener('click', () => {
+            this.addNewProduct();
         });
+        
+        document.getElementById('removeProductBtn').addEventListener('click', () => {
+            this.removeSelectedProduct();
+        });
+        
+        // Produits prédéfinis - sera mis à jour dynamiquement
+        this.setupProductListeners();
         
         // Saisie manuelle
         document.getElementById('addManualItem').addEventListener('click', () => {
@@ -601,6 +609,153 @@ class CashRegister {
             style: 'currency',
             currency: 'EUR'
         }).format(amount);
+    }
+    
+    // Nouvelles méthodes pour la gestion des produits
+    setupProductListeners() {
+        document.querySelectorAll('.product-btn').forEach(btn => {
+            // Supprimer les anciens listeners pour éviter les doublons
+            btn.replaceWith(btn.cloneNode(true));
+        });
+        
+        // Réattacher les listeners
+        document.querySelectorAll('.product-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Si on maintient Ctrl/Cmd, on sélectionne pour suppression
+                if (e.ctrlKey || e.metaKey) {
+                    this.selectProductForDeletion(btn);
+                } else {
+                    // Sinon, on ajoute le produit au panier
+                    const name = btn.dataset.name;
+                    const price = parseFloat(btn.dataset.price);
+                    this.addItem(name, price, 1);
+                }
+            });
+            
+            // Clic droit pour sélectionner pour suppression
+            btn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                this.selectProductForDeletion(btn);
+            });
+        });
+    }
+    
+    selectProductForDeletion(btn) {
+        // Désélectionner le précédent
+        if (this.selectedProductBtn) {
+            this.selectedProductBtn.classList.remove('selected');
+        }
+        
+        // Sélectionner le nouveau
+        this.selectedProductBtn = btn;
+        btn.classList.add('selected');
+    }
+    
+    addNewProduct() {
+        const name = document.getElementById('newProductName').value.trim();
+        const price = parseFloat(document.getElementById('newProductPrice').value);
+        
+        if (!name) {
+            alert('Veuillez saisir un nom de produit.');
+            return;
+        }
+        
+        if (isNaN(price) || price <= 0) {
+            alert('Veuillez saisir un prix valide.');
+            return;
+        }
+        
+        // Vérifier si le produit existe déjà
+        const existingProduct = Array.from(document.querySelectorAll('.product-btn')).find(btn => 
+            btn.dataset.name.toLowerCase() === name.toLowerCase()
+        );
+        
+        if (existingProduct) {
+            alert('Un produit avec ce nom existe déjà.');
+            return;
+        }
+        
+        // Créer le nouveau bouton de produit
+        const productBtn = document.createElement('button');
+        productBtn.className = 'product-btn';
+        productBtn.dataset.name = name;
+        productBtn.dataset.price = price.toString();
+        productBtn.innerHTML = `${name}<br>${this.formatCurrency(price)}`;
+        
+        // Ajouter au DOM
+        const productsGrid = document.getElementById('productsGrid');
+        productsGrid.appendChild(productBtn);
+        
+        // Sauvegarder le produit
+        this.savedProducts.push({ name, price });
+        localStorage.setItem('savedProducts', JSON.stringify(this.savedProducts));
+        
+        // Réattacher les listeners
+        this.setupProductListeners();
+        
+        // Vider les champs
+        document.getElementById('newProductName').value = '';
+        document.getElementById('newProductPrice').value = '';
+        
+        // Animation d'ajout
+        productBtn.style.opacity = '0';
+        productBtn.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+            productBtn.style.transition = 'all 0.3s ease';
+            productBtn.style.opacity = '1';
+            productBtn.style.transform = 'scale(1)';
+        }, 100);
+        
+        alert(`Produit "${name}" ajouté avec succès !`);
+    }
+    
+    removeSelectedProduct() {
+        if (!this.selectedProductBtn) {
+            alert('Veuillez d\'abord sélectionner un produit à supprimer.\nClic droit ou Ctrl+Clic sur un produit pour le sélectionner.');
+            return;
+        }
+        
+        const productName = this.selectedProductBtn.dataset.name;
+        
+        if (confirm(`Êtes-vous sûr de vouloir supprimer le produit "${productName}" ?`)) {
+            // Supprimer du DOM
+            this.selectedProductBtn.remove();
+            
+            // Supprimer de la liste sauvegardée
+            this.savedProducts = this.savedProducts.filter(product => 
+                product.name !== productName
+            );
+            localStorage.setItem('savedProducts', JSON.stringify(this.savedProducts));
+            
+            // Réinitialiser la sélection
+            this.selectedProductBtn = null;
+            
+            alert(`Produit "${productName}" supprimé avec succès !`);
+        }
+    }
+    
+    loadSavedProducts() {
+        // Charger les produits sauvegardés et les ajouter au DOM
+        this.savedProducts.forEach(product => {
+            // Vérifier si le produit n'existe pas déjà dans le DOM
+            const existingProduct = Array.from(document.querySelectorAll('.product-btn')).find(btn => 
+                btn.dataset.name === product.name
+            );
+            
+            if (!existingProduct) {
+                const productBtn = document.createElement('button');
+                productBtn.className = 'product-btn';
+                productBtn.dataset.name = product.name;
+                productBtn.dataset.price = product.price.toString();
+                productBtn.innerHTML = `${product.name}<br>${this.formatCurrency(product.price)}`;
+                
+                const productsGrid = document.getElementById('productsGrid');
+                productsGrid.appendChild(productBtn);
+            }
+        });
+        
+        // Réattacher les listeners après le chargement
+        this.setupProductListeners();
     }
 }
 

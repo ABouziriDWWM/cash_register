@@ -23,6 +23,22 @@
                 <!-- Zone de produits prédéfinis -->
                 <section class="products-section">
                     <h3>Produits</h3>
+
+                    <!-- Gestion des produits -->
+                    <div class="product-management">
+                        <div class="product-form">
+                            <input type="text" id="newProductName" placeholder="Nom du produit"
+                                class="input-field-small">
+                            <input type="number" id="newProductPrice" placeholder="Prix" step="0.01"
+                                class="input-field-small">
+                            <button id="addProductBtn" class="btn btn-success btn-small"> Ajouter</button>
+                            <button id="removeProductBtn" class="btn btn-danger btn-small">Supprimer</button>
+                        </div>
+                        <div class="product-instructions">
+                            <small>Pour supprimer : cliquez d'abord sur un produit, puis sur "Supprimer"</small>
+                        </div>
+                    </div>
+
                     <div class="products-grid" id="productsGrid">
                         <button class="product-btn" data-name="Pain" data-price="1.50">Pain<br>1,50€</button>
                         <button class="product-btn" data-name="Lait" data-price="1.20">Lait<br>1,20€</button>
@@ -40,8 +56,8 @@
                         <div class="receipt-header">
                             <div class="store-info">
                                 <strong>MAGASIN AMINE</strong><br>
-                                18 rue jean macé<br>
-                                38000 Grenoble<br>
+                                12 Rue de la Paix<br>
+                                38000 GRENOBLE<br>
                                 Tel: 01.23.45.67.89
                             </div>
                             <hr>
