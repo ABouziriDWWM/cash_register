@@ -575,6 +575,7 @@ section h3 {
 }
 
 .input-field-small {
+  width: 95%;
   padding: 8px;
   border: 2px solid #bdc3c7;
   border-radius: 6px;
